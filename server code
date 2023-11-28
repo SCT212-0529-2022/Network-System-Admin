@@ -1,0 +1,43 @@
+import socket
+
+# Define a list of allowed IP addresses
+allowed_ips = ['127.0.0.1']  # Add the IP addresses you want to allow
+
+# Create a server socket
+server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+# Define the server address and port
+server_address = ('localhost', 9999)
+
+# Bind the server socket to the address and port
+server_socket.bind(server_address)
+
+# Listen for incoming connections
+server_socket.listen(5)
+print("Server is listening for incoming connections...")
+
+while True:
+    # Wait for a connection
+    client_socket, client_address = server_socket.accept()
+
+    # Get the client's IP address
+    client_ip = client_address[0]
+
+    # Check if the client's IP is allowed
+    if client_ip not in allowed_ips:
+        print(f"Connection from {client_ip} not allowed.")
+        client_socket.close()
+        continue
+
+    print(f"Connection from {client_address}")
+
+    # Receive data from the client
+    data = client_socket.recv(1024).decode()
+    print(f"Received from client: {data}")
+
+    # Send a response back to the client
+    response = "Message received!"
+    client_socket.sendall(response.encode())
+
+    # Close the connection
+    client_socket.close()
